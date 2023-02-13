@@ -1,0 +1,8 @@
+# Binaries
+build/
+
+# coverage reports
+coverage.out
+
+# test output
+testdata/output/

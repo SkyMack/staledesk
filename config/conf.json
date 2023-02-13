@@ -1,0 +1,276 @@
+{
+  "data": {
+    "contacts": [
+      {
+        "active": true,
+        "address": "123 FAKE ST  EXAMPLEVILLE, ZZ",
+        "avatar": {
+          "avatar_url": "https://example.com/foo",
+          "content_type": "",
+          "id": 1,
+          "name": "bar",
+          "size": 0,
+          "created_at": "0001-01-01T00:00:00Z",
+          "updated_at": "0001-01-01T00:00:00Z"
+        },
+        "created_at": "2023-02-10T16:00:00Z",
+        "custom_fields": {
+          "benefit": "CSNP",
+          "eligibility_status": "Yes"
+        },
+        "email": "baz@example.com",
+        "id": 98765432198,
+        "language": "en",
+        "name": "FAKE1 TESTERSON",
+        "other_emails": [],
+        "unique_external_id": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzza",
+        "phone": "+10005551234",
+        "time_zone": "Eastern Time (US \u0026 Canada)",
+        "updated_at": "2023-02-11T16:00:00Z"
+      },
+      {
+        "active": true,
+        "address": "223 FAKE ST  EXAMPLEVILLE, ZZ",
+        "avatar": {
+          "avatar_url": "https://example.com/foo2",
+          "content_type": "",
+          "id": 2,
+          "name": "bar2",
+          "size": 0,
+          "created_at": "0001-01-01T00:00:00Z",
+          "updated_at": "0001-01-01T00:00:00Z"
+        },
+        "created_at": "2023-02-10T16:10:00Z",
+        "custom_fields": {
+          "benefit": "CSNP",
+          "eligibility_status": "Yes"
+        },
+        "email": "baz2@example.com",
+        "id": 98765432199,
+        "language": "en",
+        "name": "FAKE2 TESTERSON",
+        "other_emails": [],
+        "unique_external_id": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzb",
+        "phone": "+10005551235",
+        "time_zone": "Eastern Time (US \u0026 Canada)",
+        "updated_at": "2023-02-11T16:10:00Z"
+      },
+      {
+        "active": true,
+        "address": "123 EXAMPLE ST  EXAMPLEVILLE, ZZ",
+        "avatar": {
+          "avatar_url": "https://example.com/foo3",
+          "content_type": "",
+          "id": 3,
+          "name": "bar3",
+          "size": 0,
+          "created_at": "0001-01-01T00:00:00Z",
+          "updated_at": "0001-01-01T00:00:00Z"
+        },
+        "created_at": "2023-02-10T16:30:00Z",
+        "custom_fields": {
+          "benefit": "CSNP",
+          "eligibility_status": "Yes"
+        },
+        "email": "baz3@example.com",
+        "id": 98765432200,
+        "language": "en",
+        "name": "FAKELY MCTESTER",
+        "other_emails": [],
+        "unique_external_id": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzc",
+        "phone": "+10005552234",
+        "time_zone": "Eastern Time (US \u0026 Canada)",
+        "updated_at": "2023-02-11T16:30:00Z"
+      },
+      {
+        "active": true,
+        "address": "888 NOTTA ST  NOTOWN, ZZ",
+        "avatar": {
+          "avatar_url": "https://example.com/qux",
+          "content_type": "",
+          "id": 10,
+          "name": "bazbaz",
+          "size": 0,
+          "created_at": "0001-01-01T00:00:00Z",
+          "updated_at": "0001-01-01T00:00:00Z"
+        },
+        "created_at": "2023-02-10T17:00:00Z",
+        "custom_fields": {
+          "benefit": "CSNP",
+          "eligibility_status": "Yes"
+        },
+        "email": "bazbaz@fakedomain.com",
+        "id": 98765432210,
+        "language": "en",
+        "name": "NOONE EVER",
+        "other_emails": [],
+        "unique_external_id": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzd",
+        "phone": "+10005553234",
+        "time_zone": "Eastern Time (US \u0026 Canada)",
+        "updated_at": "2023-02-11T17:00:00Z"
+      },
+      {
+        "active": true,
+        "address": "5000 ENDLESS RD  EXAMPLEVILLE, ZZ",
+        "avatar": {
+          "avatar_url": "",
+          "content_type": "",
+          "id": 0,
+          "name": "",
+          "size": 0,
+          "created_at": "0001-01-01T00:00:00Z",
+          "updated_at": "0001-01-01T00:00:00Z"
+        },
+        "created_at": "2023-02-10T18:00:00Z",
+        "custom_fields": {
+          "benefit": "CSNP",
+          "eligibility_status": "Yes"
+        },
+        "email": "",
+        "id": 98765432300,
+        "language": "en",
+        "name": "NEVERMORE LIVIN",
+        "other_emails": [],
+        "unique_external_id": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzze",
+        "phone": "+10005551234",
+        "time_zone": "Eastern Time (US \u0026 Canada)",
+        "updated_at": "2023-02-11T16:00:00Z"
+      },
+      {
+        "active": true,
+        "address": "17 ILLUSIONARY PL  EXAMPLEVILLE, ZZ",
+        "avatar": {
+          "avatar_url": "",
+          "content_type": "",
+          "id": 0,
+          "name": "",
+          "size": 0,
+          "created_at": "0001-01-01T00:00:00Z",
+          "updated_at": "0001-01-01T00:00:00Z"
+        },
+        "created_at": "2023-02-10T18:30:00Z",
+        "custom_fields": {
+          "benefit": "CSNP",
+          "eligibility_status": "Yes"
+        },
+        "email": "bar@example.com",
+        "id": 98765432400,
+        "language": "en",
+        "name": "IMA TESTIFICATE",
+        "other_emails": [],
+        "unique_external_id": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzf",
+        "phone": "+10005553235",
+        "time_zone": "Eastern Time (US \u0026 Canada)",
+        "updated_at": "2023-02-11T18:35:00Z"
+      },
+      {
+        "active": true,
+        "address": "123 FAKE ST  FAKETON, ZZ",
+        "avatar": {
+          "avatar_url": "",
+          "content_type": "",
+          "id": 0,
+          "name": "",
+          "size": 0,
+          "created_at": "0001-01-01T00:00:00Z",
+          "updated_at": "0001-01-01T00:00:00Z"
+        },
+        "created_at": "2023-02-10T18:45:00Z",
+        "custom_fields": {
+          "benefit": "CSNP",
+          "eligibility_status": "Yes"
+        },
+        "email": "urat@example.com",
+        "id": 98765432198,
+        "language": "en",
+        "name": "URA TESTIFICATE",
+        "other_emails": [],
+        "unique_external_id": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzg",
+        "phone": "+10005551240",
+        "time_zone": "Pacific Time (US \u0026 Canada)",
+        "updated_at": "2023-02-11T18:46:00Z"
+      },
+      {
+        "active": true,
+        "address": "2 ABANDONED MT  WILDERNESS, ZZ",
+        "avatar": {
+          "avatar_url": "",
+          "content_type": "",
+          "id": 0,
+          "name": "",
+          "size": 0,
+          "created_at": "0001-01-01T00:00:00Z",
+          "updated_at": "0001-01-01T00:00:00Z"
+        },
+        "created_at": "2023-02-10T15:10:00Z",
+        "custom_fields": {
+          "benefit": "CSNP",
+          "eligibility_status": "Yes"
+        },
+        "email": "",
+        "id": 98765432000,
+        "language": "en",
+        "name": "ONE MISSISSIPPI",
+        "other_emails": [],
+        "unique_external_id": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzh",
+        "phone": "+10005551299",
+        "time_zone": "Pacific Time (US \u0026 Canada)",
+        "updated_at": "2023-02-11T15:11:23Z"
+      },
+      {
+        "active": true,
+        "address": "14256 INFINITE CIRCLE  NOTATOWN, XY",
+        "avatar": {
+          "avatar_url": "https://example.com/avatars/boo.png",
+          "content_type": "",
+          "id": 27,
+          "name": "myavy",
+          "size": 50,
+          "created_at": "0001-01-01T00:00:00Z",
+          "updated_at": "0001-01-01T00:00:00Z"
+        },
+        "created_at": "2023-02-10T19:37:54Z",
+        "custom_fields": {
+          "benefit": "CSNP",
+          "eligibility_status": "Yes"
+        },
+        "email": "surething@example.com",
+        "id": 98765433355,
+        "language": "en",
+        "name": "SURE OKAYTHEN",
+        "other_emails": [],
+        "unique_external_id": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzj",
+        "phone": "+10005551234",
+        "time_zone": "Eastern Time (US \u0026 Canada)",
+        "updated_at": "2023-02-11T16:00:00Z"
+      },
+      {
+        "active": true,
+        "address": "1010 TWOTWENTY PARK  NOTATOWN, XY",
+        "avatar": {
+          "avatar_url": "https://example.com/avatars/oops.jpg",
+          "content_type": "",
+          "id": 98,
+          "name": "thatone",
+          "size": 210,
+          "created_at": "0001-01-01T00:00:00Z",
+          "updated_at": "0001-01-01T00:00:00Z"
+        },
+        "created_at": "2023-02-10T16:11:22Z",
+        "custom_fields": {
+          "benefit": "CSNP",
+          "eligibility_status": "Yes"
+        },
+        "email": "foobazbaz@example.com",
+        "id": 98765433498,
+        "language": "en",
+        "name": "FOOBAR BAZZINGTON",
+        "other_emails": [],
+        "unique_external_id": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzk",
+        "phone": "+10005551239",
+        "time_zone": "Pacific Time (US \u0026 Canada)",
+        "updated_at": "2023-02-11T16:11:32Z"
+      }
+    ]
+  }
+}
