@@ -46,8 +46,7 @@ func (contControl *Contacts) GetByID(ctx *gin.Context) {
 	if !exists {
 		ctx.JSON(http.StatusNotFound, nil)
 	} else {
-		respCode := http.StatusOK
-		ctx.JSON(respCode, contact)
+		ctx.JSON(http.StatusOK, contact)
 	}
 }
 
