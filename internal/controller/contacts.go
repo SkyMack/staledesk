@@ -171,7 +171,14 @@ func (contControl *Contacts) Update(ctx *gin.Context) {
 
 }
 
-func (contControl Contacts) Delete(ctx *gin.Context) {
+func (contControl *Contacts) Delete(ctx *gin.Context) {
+	intID, err := getIntID(ctx)
+	if err != nil {
+		return
+	}
+	delete(contControl.CurrentContacts, intID)
+	ctx.JSON(http.StatusNoContent, nil)
+}
 
 func getIntID(ctx *gin.Context) (int, error) {
 	ID := ctx.Param(ParamNameContactID)
