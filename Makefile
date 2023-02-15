@@ -1,4 +1,18 @@
-COVER_PROFILE_FILE := "./coverage.out"
+ifeq ($(OS),Windows_NT)
+	SHELL := powershell.exe
+	.SHELLFLAGS := -NoProfile -Command
+ 	PATHSEP2=\\
+	RMFLAGFORCE=fo
+	BINARYEXTENSION=.exe
+else
+	PATHSEP2=/
+	RMFLAGFORCE=f
+	BINARYEXTENSION=
+endif
+
+PATHSEP=$(strip $(PATHSEP2))
+
+COVER_PROFILE_FILE := .$(PATHSEP)coverage.out
 
 ## Standard Targets
 all: test check
@@ -10,12 +24,12 @@ build: build/staledesk
 check: check-golint
 
 clean:
-	rm -rf build/*
-	rm -f $(COVER_PROFILE_FILE)
+	rm -r -$(RMFLAGFORCE) build$(PATHSEP)*
+	rm -$(RMFLAGFORCE) $(COVER_PROFILE_FILE)*
 
 ## Custom Targets
 build/staledesk:
-	go build -o build/staledesk ./cmd/staledesk
+	go build -o build$(PATHSEP)staledesk$(BINARYEXTENSION) .$(PATHSEP)cmd$(PATHSEP)staledesk
 
 check-golint:
 	golint -set_exit_status ./...

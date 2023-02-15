@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/SkyMack/staledesk/internal/models"
 	log "github.com/sirupsen/logrus"
@@ -20,8 +21,8 @@ var (
 	ErrCannotPopulateContactsFromConfig = fmt.Errorf("cannot populate contact record from config file")
 	ErrCannotProcessConfig              = fmt.Errorf("unable to process config file")
 
-	pathConfigFile1 = fmt.Sprintf("../%s/", pathConfigDir)
-	pathConfigFile2 = fmt.Sprintf("%s/", pathConfigDir)
+	pathConfigFile1 = fmt.Sprintf("..%c%s%c", os.PathSeparator, pathConfigDir, os.PathSeparator)
+	pathConfigFile2 = fmt.Sprintf("%s%c", pathConfigDir, os.PathSeparator)
 )
 
 type Data struct {

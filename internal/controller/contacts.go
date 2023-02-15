@@ -31,42 +31,30 @@ func NewContactsController() *Contacts {
 	}
 }
 
-func (contControl Contacts) GetAll(ctx *gin.Context) {
+func (contControl *Contacts) GetAll(ctx *gin.Context) {
 	respCode := http.StatusOK
 	ctx.JSON(respCode, contControl.CurrentContacts)
 }
 
-func (contControl Contacts) GetByID(ctx *gin.Context) {
-	ID := ctx.Param(ParamNameContactID)
-	intID, err := strconv.Atoi(ID)
+func (contControl *Contacts) GetByID(ctx *gin.Context) {
+	intID, err := getIntID(ctx)
 	if err != nil {
-		respMessage := ErrorResp{
-			Description: "invalid contact id specified",
-			Errors: []ErrorDetails{
-				{
-					Field:   "id",
-					Message: "id is not an integer",
-					Code:    "invalid_id",
-				},
-			},
-		}
-		ctx.JSON(http.StatusBadRequest, respMessage)
+		return
 	}
 
 	contact, exists := contControl.CurrentContacts[intID]
 	if !exists {
 		ctx.JSON(http.StatusNotFound, nil)
 	} else {
-		respCode := http.StatusOK
-		ctx.JSON(respCode, contact)
+		ctx.JSON(http.StatusOK, contact)
 	}
 }
 
-func (contControl Contacts) Search(ctx *gin.Context) {
+func (contControl *Contacts) Search(ctx *gin.Context) {
 
 }
 
-func (contControl Contacts) Add(ctx *gin.Context) {
+func (contControl *Contacts) Add(ctx *gin.Context) {
 	var newContact models.Contact
 	if err := ctx.BindJSON(&newContact); err != nil {
 		respMessage := ErrorResp{
@@ -179,10 +167,35 @@ func (contControl Contacts) Add(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, contControl.CurrentContacts[newContactID])
 }
 
-func (contControl Contacts) Update(ctx *gin.Context) {
+func (contControl *Contacts) Update(ctx *gin.Context) {
 
 }
 
-func (contControl Contacts) Delete(ctx *gin.Context) {
+func (contControl *Contacts) Delete(ctx *gin.Context) {
+	intID, err := getIntID(ctx)
+	if err != nil {
+		return
+	}
+	delete(contControl.CurrentContacts, intID)
+	ctx.JSON(http.StatusNoContent, nil)
+}
 
+func getIntID(ctx *gin.Context) (int, error) {
+	ID := ctx.Param(ParamNameContactID)
+	intID, err := strconv.Atoi(ID)
+	if err != nil {
+		respMessage := ErrorResp{
+			Description: "invalid contact id specified",
+			Errors: []ErrorDetails{
+				{
+					Field:   "id",
+					Message: "id is not an integer",
+					Code:    "invalid_id",
+				},
+			},
+		}
+		ctx.JSON(http.StatusBadRequest, respMessage)
+		return 0, err
+	}
+	return intID, nil
 }
