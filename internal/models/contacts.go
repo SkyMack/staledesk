@@ -36,13 +36,13 @@ type Contact struct {
 
 // ContactAvatar contains the subfields for the avatar field of the Contact type
 type ContactAvatar struct {
-	AvatarUrl   string    `json:"avatar_url"`
-	ContentType string    `json:"content_type"`
-	Id          int       `json:"id"`
-	Name        string    `json:"name"`
-	Size        int       `json:"size"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	AvatarUrl   string     `json:"avatar_url"`
+	ContentType string     `json:"content_type"`
+	Id          int        `json:"id"`
+	Name        string     `json:"name"`
+	Size        int        `json:"size"`
+	CreatedAt   *time.Time `json:"created_at"`
+	UpdatedAt   *time.Time `json:"updated_at"`
 }
 
 // ContactCustomFields contains the values for the custom_fields portion of a Contact
