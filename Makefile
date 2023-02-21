@@ -26,6 +26,7 @@ check: check-golint
 clean:
 	rm -r -$(RMFLAGFORCE) build$(PATHSEP)*
 	rm -$(RMFLAGFORCE) $(COVER_PROFILE_FILE)*
+	git checkout build$(PATHSEP).keep
 
 ## Custom Targets
 build/staledesk:

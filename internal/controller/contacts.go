@@ -137,17 +137,17 @@ func (contControl *Contacts) Add(ctx *gin.Context) {
 		},
 	}
 	for _, contact := range contControl.CurrentContacts {
-		if contact.Email == newContact.Email {
+		if contact.Email == newContact.Email && newContact.Email != "" {
 			respUniqueFieldErr.Errors[0].Field = "email"
 			ctx.JSON(http.StatusBadRequest, respUniqueFieldErr)
 			return
 		}
-		if contact.TwitterID == newContact.TwitterID {
+		if contact.TwitterID == newContact.TwitterID && newContact.TwitterID != "" {
 			respUniqueFieldErr.Errors[0].Field = "twitter_id"
 			ctx.JSON(http.StatusBadRequest, respUniqueFieldErr)
 			return
 		}
-		if contact.ExternalID == newContact.ExternalID {
+		if contact.ExternalID == newContact.ExternalID && newContact.ExternalID != "" {
 			respUniqueFieldErr.Errors[0].Field = "unique_external_id"
 			ctx.JSON(http.StatusBadRequest, respUniqueFieldErr)
 			return
@@ -159,6 +159,7 @@ func (contControl *Contacts) Add(ctx *gin.Context) {
 	for {
 		newContactID = 100000000000 + rand.Intn(900000000000)
 		if _, exists := contControl.CurrentContacts[newContactID]; !exists {
+			newContact.ID = newContactID
 			contControl.CurrentContacts[newContactID] = newContact
 			// TODO: Add created_at/updated_at values
 			break
