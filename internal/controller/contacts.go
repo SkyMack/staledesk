@@ -159,6 +159,7 @@ func (contControl *Contacts) Add(ctx *gin.Context) {
 	for {
 		newContactID = 100000000000 + rand.Intn(900000000000)
 		if _, exists := contControl.CurrentContacts[newContactID]; !exists {
+			newContact.ID = newContactID
 			contControl.CurrentContacts[newContactID] = newContact
 			// TODO: Add created_at/updated_at values
 			break
