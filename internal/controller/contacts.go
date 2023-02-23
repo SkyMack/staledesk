@@ -169,7 +169,35 @@ func (contControl *Contacts) Add(ctx *gin.Context) {
 }
 
 func (contControl *Contacts) Update(ctx *gin.Context) {
+	intID, err := getIntID(ctx)
+	if err != nil {
+		return
+	}
 
+	var updatedContact models.Contact
+	if err := ctx.BindJSON(&updatedContact); err != nil {
+		respMessage := ErrorResp{
+			Description: "unable to process new contact",
+			Errors: []ErrorDetails{
+				{
+					Field:   "",
+					Message: fmt.Sprintf("bind failed: %s", err.Error()),
+					Code:    "new_contact_failure",
+				},
+			},
+		}
+		ctx.JSON(http.StatusInternalServerError, respMessage)
+		return
+	}
+
+	finalContact := contControl.CurrentContacts[intID]
+
+	if updatedContact.Phone != "" {
+		finalContact.Phone = updatedContact.Phone
+	}
+
+	contControl.CurrentContacts[intID] = finalContact
+	ctx.JSON(http.StatusOK, contControl.CurrentContacts[intID])
 }
 
 func (contControl *Contacts) Delete(ctx *gin.Context) {

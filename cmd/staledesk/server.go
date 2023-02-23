@@ -65,6 +65,7 @@ func NewServer() *gin.Engine {
 			contactsGroup.GET("/autocomplete", contacts.Search)
 			contactsGroup.GET(fmt.Sprintf("/:%s", controller.ParamNameContactID), contacts.GetByID)
 			contactsGroup.POST("/", contacts.Add)
+			contactsGroup.PUT(fmt.Sprintf("/:%s", controller.ParamNameContactID), contacts.Update)
 		}
 	}
 
