@@ -197,6 +197,7 @@ func (contControl *Contacts) Update(ctx *gin.Context) {
 	}
 
 	contControl.CurrentContacts[intID] = finalContact
+	ctx.JSON(http.StatusOK, contControl.CurrentContacts[intID])
 }
 
 func (contControl *Contacts) Delete(ctx *gin.Context) {
