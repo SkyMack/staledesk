@@ -55,17 +55,30 @@ func NewServer() *gin.Engine {
 	router := gin.New()
 	router.SetTrustedProxies(nil)
 
+	contacts := controller.NewContactsController()
+
 	apiBase := router.Group(apiPathBase)
 	{
 		contactsGroup := apiBase.Group("contacts")
 		{
-			contacts := controller.NewContactsController()
-			contactsGroup.DELETE(fmt.Sprintf("/:%s", controller.ParamNameContactID), contacts.Delete)
+			// Requests ending in "contacts" or "contacts/"
+			contactsGroup.GET("", contacts.GetAll)
 			contactsGroup.GET("/", contacts.GetAll)
-			contactsGroup.GET("/autocomplete", contacts.Search)
-			contactsGroup.GET(fmt.Sprintf("/:%s", controller.ParamNameContactID), contacts.GetByID)
+			contactsGroup.POST("", contacts.Add)
 			contactsGroup.POST("/", contacts.Add)
+
+			// Requests ending in "contacts/autocomplete"
+			contactsGroup.GET("/autocomplete", contacts.Search)
+
+			// Requests ending in "contacts/ID_NUMBER"
+			contactsGroup.DELETE(fmt.Sprintf("/:%s", controller.ParamNameContactID), contacts.Delete)
+			contactsGroup.GET(fmt.Sprintf("/:%s", controller.ParamNameContactID), contacts.GetByID)
 			contactsGroup.PUT(fmt.Sprintf("/:%s", controller.ParamNameContactID), contacts.Update)
+		}
+
+		searchGroup := apiBase.Group("search")
+		{
+			searchGroup.GET("/contacts", contacts.Filter)
 		}
 	}
 
