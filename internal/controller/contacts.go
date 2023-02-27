@@ -39,7 +39,11 @@ func NewContactsController() *Contacts {
 }
 
 func (contControl *Contacts) GetAll(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, contControl.CurrentContacts)
+	var respContacts []models.Contact
+	for _, cont := range contControl.CurrentContacts {
+		respContacts = append(respContacts, cont)
+	}
+	ctx.JSON(http.StatusOK, respContacts)
 }
 
 func (contControl *Contacts) GetByID(ctx *gin.Context) {
