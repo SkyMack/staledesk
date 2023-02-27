@@ -32,8 +32,7 @@ func NewContactsController() *Contacts {
 }
 
 func (contControl *Contacts) GetAll(ctx *gin.Context) {
-	respCode := http.StatusOK
-	ctx.JSON(respCode, contControl.CurrentContacts)
+	ctx.JSON(http.StatusOK, contControl.CurrentContacts)
 }
 
 func (contControl *Contacts) GetByID(ctx *gin.Context) {
