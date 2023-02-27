@@ -79,19 +79,22 @@ func (cd *Data) populateContacts() error {
 	}
 
 	for _, contact := range defaultContacts {
+		log.WithFields(log.Fields{
+			"contact.active":     contact.Active,
+			"contact.address":    contact.Address,
+			"contact.created_at": contact.CreatedAt,
+			"contact.email":      contact.Email,
+			"contact.id":         contact.ID,
+			"contact.language":   contact.Language,
+			"contact.mobile":     contact.Mobile,
+			"contact.name":       contact.Name,
+			"contact.people_id":  contact.PeopleID,
+			"contact.phone":      contact.Phone,
+			"contact.timezone":   contact.TimeZone,
+			"contact.twitter_id": contact.TwitterID,
+		}).Trace("populating default contact")
 		cd.Contacts[contact.ID] = contact
 	}
-	//for _, data := range cd.Raw.Get("data.contacts") {
-	//	var newContact models.Contact
-	//	log.Debugf("contact data: %s", data)
-	//	if err := json.Unmarshal([]byte(data), &newContact); err != nil {
-	//		log.WithFields(log.Fields{
-	//			"error": err.Error(),
-	//		}).Fatal("cannot read contacts from config file")
-	//		return ErrCannotPopulateContactsFromConfig
-	//	}
-	//	cd.Contacts[newContact.ID] = newContact
-	//}
 	return nil
 }
 
