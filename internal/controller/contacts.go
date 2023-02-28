@@ -18,12 +18,6 @@ const (
 	ParamNameContactID = "id"
 )
 
-var (
-	ErrFieldAtLeastOneSet     = fmt.Errorf("at least one of these fields must be set")
-	ErrFieldRequired          = fmt.Errorf("field is required")
-	ErrFieldValueMustBeUnique = fmt.Errorf("field must have a unique value")
-)
-
 type Contacts struct {
 	CurrentContacts map[int]models.Contact
 }
@@ -161,87 +155,23 @@ func (contControl *Contacts) Add(ctx *gin.Context) {
 		return
 	}
 
-	// Ensure the required fields are set
-	if newContact.Name == "" {
+	invalidFields, isValid, err := newContact.IsValid(contControl.CurrentContacts)
+	if !isValid {
+		var respErrorDetails []ErrorDetails
+		for _, field := range invalidFields {
+			fieldError := ErrorDetails{
+				Field:   field,
+				Message: err.Error(),
+				Code:    "invalid_field_value",
+			}
+			respErrorDetails = append(respErrorDetails, fieldError)
+		}
 		respMessage := ErrorResp{
-			Description: ErrFieldRequired.Error(),
-			Errors: []ErrorDetails{
-				{
-					Field:   "name",
-					Message: ErrFieldRequired.Error(),
-					Code:    "missing_field",
-				},
-			},
+			Description: err.Error(),
+			Errors:      respErrorDetails,
 		}
 		ctx.JSON(http.StatusBadRequest, respMessage)
 		return
-	}
-	if newContact.Email == "" &&
-		newContact.Phone == "" &&
-		newContact.Mobile == "" &&
-		newContact.TwitterID == "" &&
-		newContact.ExternalID == "" {
-
-		respMessage := ErrorResp{
-			Description: ErrFieldAtLeastOneSet.Error(),
-			Errors: []ErrorDetails{
-				{
-					Field:   "email",
-					Message: ErrFieldAtLeastOneSet.Error(),
-					Code:    "missing_field",
-				},
-				{
-					Field:   "phone",
-					Message: ErrFieldAtLeastOneSet.Error(),
-					Code:    "missing_field",
-				},
-				{
-					Field:   "mobile",
-					Message: ErrFieldAtLeastOneSet.Error(),
-					Code:    "missing_field",
-				},
-				{
-					Field:   "twitter_id",
-					Message: ErrFieldAtLeastOneSet.Error(),
-					Code:    "missing_field",
-				},
-				{
-					Field:   "unique_external_id",
-					Message: ErrFieldAtLeastOneSet.Error(),
-					Code:    "missing_field",
-				},
-			},
-		}
-		ctx.JSON(http.StatusBadRequest, respMessage)
-		return
-	}
-
-	// Ensure fields that must be unique will remain so
-	respUniqueFieldErr := ErrorResp{
-		Description: ErrFieldValueMustBeUnique.Error(),
-		Errors: []ErrorDetails{
-			{
-				Message: ErrFieldValueMustBeUnique.Error(),
-				Code:    "existing_field_value",
-			},
-		},
-	}
-	for _, contact := range contControl.CurrentContacts {
-		if contact.Email == newContact.Email && newContact.Email != "" {
-			respUniqueFieldErr.Errors[0].Field = "email"
-			ctx.JSON(http.StatusBadRequest, respUniqueFieldErr)
-			return
-		}
-		if contact.TwitterID == newContact.TwitterID && newContact.TwitterID != "" {
-			respUniqueFieldErr.Errors[0].Field = "twitter_id"
-			ctx.JSON(http.StatusBadRequest, respUniqueFieldErr)
-			return
-		}
-		if contact.ExternalID == newContact.ExternalID && newContact.ExternalID != "" {
-			respUniqueFieldErr.Errors[0].Field = "unique_external_id"
-			ctx.JSON(http.StatusBadRequest, respUniqueFieldErr)
-			return
-		}
 	}
 
 	// Generate a new, unique numeric ID for the contact and add it to the set of contacts
