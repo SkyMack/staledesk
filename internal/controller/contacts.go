@@ -213,12 +213,106 @@ func (contControl *Contacts) Update(ctx *gin.Context) {
 		return
 	}
 
+	contactUpdated := false
 	finalContact := contControl.CurrentContacts[intID]
 
+	if updatedContact.Address != "" {
+		finalContact.Address = updatedContact.Address
+		contactUpdated = true
+	}
+	if updatedContact.Avatar != (models.ContactAvatar{}) {
+		finalContact.Avatar = updatedContact.Avatar
+		contactUpdated = true
+	}
+	if updatedContact.CompanyID != 0 {
+		finalContact.CompanyID = updatedContact.CompanyID
+		contactUpdated = true
+	}
+	if updatedContact.CustomFields != (models.ContactCustomFields{}) {
+		finalContact.CustomFields = updatedContact.CustomFields
+		contactUpdated = true
+	}
+	if updatedContact.Description != "" {
+		finalContact.Description = updatedContact.Description
+		contactUpdated = true
+	}
+	if updatedContact.Email != "" {
+		finalContact.Email = updatedContact.Email
+		contactUpdated = true
+	}
+	if updatedContact.JobTitle != "" {
+		finalContact.JobTitle = updatedContact.JobTitle
+		contactUpdated = true
+	}
+	if updatedContact.Language != "" {
+		finalContact.Language = updatedContact.Language
+		contactUpdated = true
+	}
+	if updatedContact.Mobile != "" {
+		finalContact.Mobile = updatedContact.Mobile
+		contactUpdated = true
+	}
+	if updatedContact.Name != "" {
+		finalContact.Name = updatedContact.Name
+		contactUpdated = true
+	}
+	if len(updatedContact.OtherCompanies) > 0 {
+		finalContact.OtherCompanies = updatedContact.OtherCompanies
+		contactUpdated = true
+	}
+	if len(updatedContact.OtherEmails) > 0 {
+		finalContact.OtherEmails = updatedContact.OtherEmails
+		contactUpdated = true
+	}
+	if updatedContact.PeopleID != "" {
+		finalContact.PeopleID = updatedContact.PeopleID
+		contactUpdated = true
+	}
 	if updatedContact.Phone != "" {
 		finalContact.Phone = updatedContact.Phone
+		contactUpdated = true
+	}
+	if len(updatedContact.Tags) > 0 {
+		finalContact.Tags = updatedContact.Tags
+		contactUpdated = true
+	}
+	if updatedContact.TimeZone != "" {
+		finalContact.TimeZone = updatedContact.TimeZone
+		contactUpdated = true
+	}
+	if updatedContact.TwitterID != "" {
+		finalContact.TwitterID = updatedContact.TwitterID
+		contactUpdated = true
+	}
+	if updatedContact.ViewAllTickets != nil {
+		finalContact.ViewAllTickets = updatedContact.ViewAllTickets
+		contactUpdated = true
 	}
 
+	invalidFields, isValid, err := finalContact.IsValid(contControl.CurrentContacts)
+	if !isValid {
+		var respErrorDetails []ErrorDetails
+		for _, field := range invalidFields {
+			fieldError := ErrorDetails{
+				Field:   field,
+				Message: err.Error(),
+				Code:    "invalid_field_value",
+			}
+			respErrorDetails = append(respErrorDetails, fieldError)
+		}
+		respMessage := ErrorResp{
+			Description: err.Error(),
+			Errors:      respErrorDetails,
+		}
+		ctx.JSON(http.StatusBadRequest, respMessage)
+		return
+	}
+
+	if contactUpdated {
+		// Format the current UTC time in the Frontdesk compatible string of "YYYY-MM-DDTHH:MM:SSZ"
+		nowStr := time.Now().UTC().Format("2006-02-01T15:04:05Z")
+		finalContact.UpdatedAt = nowStr
+	}
 	contControl.CurrentContacts[intID] = finalContact
 	ctx.JSON(http.StatusOK, contControl.CurrentContacts[intID])
 }
