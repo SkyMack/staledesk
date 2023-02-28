@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/SkyMack/staledesk/config"
 	"github.com/SkyMack/staledesk/internal/models"
@@ -248,9 +249,12 @@ func (contControl *Contacts) Add(ctx *gin.Context) {
 	for {
 		newContactID = 100000000000 + rand.Intn(900000000000)
 		if _, exists := contControl.CurrentContacts[newContactID]; !exists {
+			// Format the current UTC time in the Frontdesk compatible string of "YYYY-MM-DDTHH:MM:SSZ"
+			nowStr := time.Now().UTC().Format("2006-02-01T15:04:05Z")
 			newContact.ID = newContactID
+			newContact.CreatedAt = nowStr
+			newContact.UpdatedAt = nowStr
 			contControl.CurrentContacts[newContactID] = newContact
-			// TODO: Add created_at/updated_at values
 			break
 		}
 	}
