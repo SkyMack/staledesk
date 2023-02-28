@@ -39,8 +39,34 @@ func NewContactsController() *Contacts {
 }
 
 func (contControl *Contacts) GetAll(ctx *gin.Context) {
-	var respContacts []models.Contact
+	mustMatchEmail := false
+	mustMatchMobile := false
+	mustMatchPhone := false
+
+	email := ctx.Query("email")
+	if len(email) > 0 {
+		mustMatchEmail = true
+	}
+	mobile := ctx.Query("mobile")
+	if len(mobile) > 0 {
+		mustMatchMobile = true
+	}
+	phone := ctx.Query("phone")
+	if len(phone) > 0 {
+		mustMatchPhone = true
+	}
+
+	respContacts := []models.Contact{}
 	for _, cont := range contControl.CurrentContacts {
+		if mustMatchEmail && cont.Email != email {
+			continue
+		}
+		if mustMatchMobile && cont.Mobile != mobile {
+			continue
+		}
+		if mustMatchPhone && cont.Phone != phone {
+			continue
+		}
 		respContacts = append(respContacts, cont)
 	}
 	ctx.JSON(http.StatusOK, respContacts)
