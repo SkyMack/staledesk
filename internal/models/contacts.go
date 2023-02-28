@@ -112,6 +112,10 @@ func (c Contact) listInvalidAtLeastOneFields() (invalidFields []string, isValid 
 func (c Contact) listInvalidUniqueFields(existingContacts map[int]Contact) (invalidFields []string, isValid bool) {
 	isValid = true
 	for _, contact := range existingContacts {
+		// Don't bother matching against the current version of the contact during an update operation
+		if contact.ID == c.ID {
+			continue
+		}
 		if contact.Email == c.Email && c.Email != "" {
 			invalidFields = append(invalidFields, "email")
 		}
