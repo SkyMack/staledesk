@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/SkyMack/staledesk/config"
 	"github.com/SkyMack/staledesk/internal/models"
@@ -15,12 +16,6 @@ import (
 
 const (
 	ParamNameContactID = "id"
-)
-
-var (
-	ErrFieldAtLeastOneSet     = fmt.Errorf("at least one of these fields must be set")
-	ErrFieldRequired          = fmt.Errorf("field is required")
-	ErrFieldValueMustBeUnique = fmt.Errorf("field must have a unique value")
 )
 
 type Contacts struct {
@@ -160,87 +155,23 @@ func (contControl *Contacts) Add(ctx *gin.Context) {
 		return
 	}
 
-	// Ensure the required fields are set
-	if newContact.Name == "" {
+	invalidFields, isValid, err := newContact.IsValid(contControl.CurrentContacts)
+	if !isValid {
+		var respErrorDetails []ErrorDetails
+		for _, field := range invalidFields {
+			fieldError := ErrorDetails{
+				Field:   field,
+				Message: err.Error(),
+				Code:    "invalid_field_value",
+			}
+			respErrorDetails = append(respErrorDetails, fieldError)
+		}
 		respMessage := ErrorResp{
-			Description: ErrFieldRequired.Error(),
-			Errors: []ErrorDetails{
-				{
-					Field:   "name",
-					Message: ErrFieldRequired.Error(),
-					Code:    "missing_field",
-				},
-			},
+			Description: err.Error(),
+			Errors:      respErrorDetails,
 		}
 		ctx.JSON(http.StatusBadRequest, respMessage)
 		return
-	}
-	if newContact.Email == "" &&
-		newContact.Phone == "" &&
-		newContact.Mobile == "" &&
-		newContact.TwitterID == "" &&
-		newContact.ExternalID == "" {
-
-		respMessage := ErrorResp{
-			Description: ErrFieldAtLeastOneSet.Error(),
-			Errors: []ErrorDetails{
-				{
-					Field:   "email",
-					Message: ErrFieldAtLeastOneSet.Error(),
-					Code:    "missing_field",
-				},
-				{
-					Field:   "phone",
-					Message: ErrFieldAtLeastOneSet.Error(),
-					Code:    "missing_field",
-				},
-				{
-					Field:   "mobile",
-					Message: ErrFieldAtLeastOneSet.Error(),
-					Code:    "missing_field",
-				},
-				{
-					Field:   "twitter_id",
-					Message: ErrFieldAtLeastOneSet.Error(),
-					Code:    "missing_field",
-				},
-				{
-					Field:   "unique_external_id",
-					Message: ErrFieldAtLeastOneSet.Error(),
-					Code:    "missing_field",
-				},
-			},
-		}
-		ctx.JSON(http.StatusBadRequest, respMessage)
-		return
-	}
-
-	// Ensure fields that must be unique will remain so
-	respUniqueFieldErr := ErrorResp{
-		Description: ErrFieldValueMustBeUnique.Error(),
-		Errors: []ErrorDetails{
-			{
-				Message: ErrFieldValueMustBeUnique.Error(),
-				Code:    "existing_field_value",
-			},
-		},
-	}
-	for _, contact := range contControl.CurrentContacts {
-		if contact.Email == newContact.Email && newContact.Email != "" {
-			respUniqueFieldErr.Errors[0].Field = "email"
-			ctx.JSON(http.StatusBadRequest, respUniqueFieldErr)
-			return
-		}
-		if contact.TwitterID == newContact.TwitterID && newContact.TwitterID != "" {
-			respUniqueFieldErr.Errors[0].Field = "twitter_id"
-			ctx.JSON(http.StatusBadRequest, respUniqueFieldErr)
-			return
-		}
-		if contact.ExternalID == newContact.ExternalID && newContact.ExternalID != "" {
-			respUniqueFieldErr.Errors[0].Field = "unique_external_id"
-			ctx.JSON(http.StatusBadRequest, respUniqueFieldErr)
-			return
-		}
 	}
 
 	// Generate a new, unique numeric ID for the contact and add it to the set of contacts
@@ -248,9 +179,12 @@ func (contControl *Contacts) Add(ctx *gin.Context) {
 	for {
 		newContactID = 100000000000 + rand.Intn(900000000000)
 		if _, exists := contControl.CurrentContacts[newContactID]; !exists {
+			// Format the current UTC time in the Frontdesk compatible string of "YYYY-MM-DDTHH:MM:SSZ"
+			nowStr := time.Now().UTC().Format("2006-02-01T15:04:05Z")
 			newContact.ID = newContactID
+			newContact.CreatedAt = nowStr
+			newContact.UpdatedAt = nowStr
 			contControl.CurrentContacts[newContactID] = newContact
-			// TODO: Add created_at/updated_at values
 			break
 		}
 	}
@@ -279,12 +213,106 @@ func (contControl *Contacts) Update(ctx *gin.Context) {
 		return
 	}
 
+	contactUpdated := false
 	finalContact := contControl.CurrentContacts[intID]
 
+	if updatedContact.Address != "" {
+		finalContact.Address = updatedContact.Address
+		contactUpdated = true
+	}
+	if updatedContact.Avatar != (models.ContactAvatar{}) {
+		finalContact.Avatar = updatedContact.Avatar
+		contactUpdated = true
+	}
+	if updatedContact.CompanyID != 0 {
+		finalContact.CompanyID = updatedContact.CompanyID
+		contactUpdated = true
+	}
+	if updatedContact.CustomFields != (models.ContactCustomFields{}) {
+		finalContact.CustomFields = updatedContact.CustomFields
+		contactUpdated = true
+	}
+	if updatedContact.Description != "" {
+		finalContact.Description = updatedContact.Description
+		contactUpdated = true
+	}
+	if updatedContact.Email != "" {
+		finalContact.Email = updatedContact.Email
+		contactUpdated = true
+	}
+	if updatedContact.JobTitle != "" {
+		finalContact.JobTitle = updatedContact.JobTitle
+		contactUpdated = true
+	}
+	if updatedContact.Language != "" {
+		finalContact.Language = updatedContact.Language
+		contactUpdated = true
+	}
+	if updatedContact.Mobile != "" {
+		finalContact.Mobile = updatedContact.Mobile
+		contactUpdated = true
+	}
+	if updatedContact.Name != "" {
+		finalContact.Name = updatedContact.Name
+		contactUpdated = true
+	}
+	if len(updatedContact.OtherCompanies) > 0 {
+		finalContact.OtherCompanies = updatedContact.OtherCompanies
+		contactUpdated = true
+	}
+	if len(updatedContact.OtherEmails) > 0 {
+		finalContact.OtherEmails = updatedContact.OtherEmails
+		contactUpdated = true
+	}
+	if updatedContact.PeopleID != "" {
+		finalContact.PeopleID = updatedContact.PeopleID
+		contactUpdated = true
+	}
 	if updatedContact.Phone != "" {
 		finalContact.Phone = updatedContact.Phone
+		contactUpdated = true
+	}
+	if len(updatedContact.Tags) > 0 {
+		finalContact.Tags = updatedContact.Tags
+		contactUpdated = true
+	}
+	if updatedContact.TimeZone != "" {
+		finalContact.TimeZone = updatedContact.TimeZone
+		contactUpdated = true
+	}
+	if updatedContact.TwitterID != "" {
+		finalContact.TwitterID = updatedContact.TwitterID
+		contactUpdated = true
+	}
+	if updatedContact.ViewAllTickets != nil {
+		finalContact.ViewAllTickets = updatedContact.ViewAllTickets
+		contactUpdated = true
 	}
 
+	invalidFields, isValid, err := finalContact.IsValid(contControl.CurrentContacts)
+	if !isValid {
+		var respErrorDetails []ErrorDetails
+		for _, field := range invalidFields {
+			fieldError := ErrorDetails{
+				Field:   field,
+				Message: err.Error(),
+				Code:    "invalid_field_value",
+			}
+			respErrorDetails = append(respErrorDetails, fieldError)
+		}
+		respMessage := ErrorResp{
+			Description: err.Error(),
+			Errors:      respErrorDetails,
+		}
+		ctx.JSON(http.StatusBadRequest, respMessage)
+		return
+	}
+
+	if contactUpdated {
+		// Format the current UTC time in the Frontdesk compatible string of "YYYY-MM-DDTHH:MM:SSZ"
+		nowStr := time.Now().UTC().Format("2006-02-01T15:04:05Z")
+		finalContact.UpdatedAt = nowStr
+	}
 	contControl.CurrentContacts[intID] = finalContact
 	ctx.JSON(http.StatusOK, contControl.CurrentContacts[intID])
 }
