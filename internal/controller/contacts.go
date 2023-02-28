@@ -5,10 +5,12 @@ import (
 	"math/rand"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/SkyMack/staledesk/config"
 	"github.com/SkyMack/staledesk/internal/models"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -25,6 +27,11 @@ type Contacts struct {
 	CurrentContacts map[int]models.Contact
 }
 
+type FilterContactsResp struct {
+	Total   int              `json:"total" mapstructure:"totle"`
+	Results []models.Contact `json:"results" mapstructure:"results"`
+}
+
 func NewContactsController() *Contacts {
 	return &Contacts{
 		CurrentContacts: config.Config.Contacts,
@@ -32,8 +39,11 @@ func NewContactsController() *Contacts {
 }
 
 func (contControl *Contacts) GetAll(ctx *gin.Context) {
-	respCode := http.StatusOK
-	ctx.JSON(respCode, contControl.CurrentContacts)
+	var respContacts []models.Contact
+	for _, cont := range contControl.CurrentContacts {
+		respContacts = append(respContacts, cont)
+	}
+	ctx.JSON(http.StatusOK, respContacts)
 }
 
 func (contControl *Contacts) GetByID(ctx *gin.Context) {
@@ -52,6 +62,59 @@ func (contControl *Contacts) GetByID(ctx *gin.Context) {
 
 func (contControl *Contacts) Search(ctx *gin.Context) {
 
+}
+
+func (contControl *Contacts) Filter(ctx *gin.Context) {
+	queryStr := ctx.Query("query")
+	if len(queryStr) == 0 {
+		contControl.GetAll(ctx)
+	} else {
+		var matchingContacts []models.Contact
+		validValues := getValidValuesFromFilterQueryString(queryStr)
+		for _, cont := range contControl.CurrentContacts {
+			log.WithFields(log.Fields{
+				"contact.people_id": cont.PeopleID,
+			}).Debug("checking for matching people id")
+			if validValues[cont.PeopleID] {
+				log.Debug("match found")
+				matchingContacts = append(matchingContacts, cont)
+			}
+		}
+		resp := FilterContactsResp{
+			Total:   len(matchingContacts),
+			Results: matchingContacts,
+		}
+		ctx.JSON(http.StatusOK, resp)
+	}
+}
+
+// TODO: Make this more robust when required
+// Currently we expect to only filter by a specific field, with one or more statements separated by OR
+func getValidValuesFromFilterQueryString(query string) map[string]bool {
+	validValues := make(map[string]bool)
+	log.WithFields(log.Fields{
+		"query": query,
+	}).Debug("starting query string processing")
+	// Strip the surrounding double quotes form the query value\
+	query = strings.Trim(query, "\"")
+	// Divide up a *fieldName:fieldValue OR fieldName:fieldValue* query into separate statements
+	statements := strings.Split(query, " OR ")
+	for _, statement := range statements {
+		// Spit a *fieldName:fieldValue* statement into separate pieces
+		statementPieces := strings.Split(statement, ":")
+		// Add the fieldValue piece to the list of valid values, removing the single quotes if the value is in quotes
+		if len(statementPieces) > 1 {
+			trimmedValue := strings.Trim(statementPieces[1], "'")
+			if len(trimmedValue) > 0 {
+				validValues[trimmedValue] = true
+			}
+		}
+	}
+	log.WithFields(log.Fields{
+		"values.count": len(validValues),
+		"values":       validValues,
+	}).Debug("query string processed")
+	return validValues
 }
 
 func (contControl *Contacts) Add(ctx *gin.Context) {
