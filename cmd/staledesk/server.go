@@ -70,6 +70,10 @@ func NewServer() *gin.Engine {
 			// Requests ending in "contacts/autocomplete"
 			contactsGroup.GET("/autocomplete", contacts.Search)
 
+			// Requests ending in "contacts/export"
+			contactsGroup.GET(fmt.Sprintf("/export/%s", controller.ParamNameContactID), contacts.ExportStatus)
+			contactsGroup.POST("/export", contacts.ExportStart)
+
 			// Requests ending in "contacts/ID_NUMBER"
 			contactsGroup.DELETE(fmt.Sprintf("/:%s", controller.ParamNameContactID), contacts.Delete)
 			contactsGroup.GET(fmt.Sprintf("/:%s", controller.ParamNameContactID), contacts.GetByID)

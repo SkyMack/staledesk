@@ -20,6 +20,26 @@ const (
 
 type Contacts struct {
 	CurrentContacts map[int]models.Contact
+	Export          ContactExportDetails
+}
+type ContactExportDetails struct {
+	Fields       ExportStartFields `json:"fields" mapstructure:"fields"`
+	Id           string            `json:"id" mapstructure:"id"`
+	TimesChecked int               `json:"times_checked" mapstructure:"times_checked"`
+}
+
+type ExportStartReq struct {
+	Fields ExportStartFields `json:"fields" mapstructure:"fields"`
+}
+type ExportStartFields struct {
+	CustomFields  []string `json:"custom_fields" mapstructure:"custom_fields"`
+	DefaultFields []string `json:"default_fields" mapstructure:"default_fields"`
+}
+
+type ExportStatusResp struct {
+	Id          string `json:"id" mapstructure:"id"`
+	Status      string `json:"status" mapstructure:"status"`
+	DownloadUrl string `json:"download_url" mapstructure:"downloadurl"`
 }
 
 type FilterContactsResp struct {
@@ -107,6 +127,28 @@ func (contControl *Contacts) Filter(ctx *gin.Context) {
 		}
 		ctx.JSON(http.StatusOK, resp)
 	}
+}
+
+func (contControl *Contacts) ExportStart(ctx *gin.Context) {
+	var req ExportStartReq
+	if err := ctx.BindJSON(&req); err != nil {
+		respMessage := ErrorResp{
+			Description: "unable to process export start request",
+			Errors: []ErrorDetails{
+				{
+					Field:   "",
+					Message: "bind failed",
+					Code:    "export_failure",
+				},
+			},
+		}
+		ctx.JSON(http.StatusInternalServerError, respMessage)
+		return
+	}
+}
+
+func (contControl *Contacts) ExportStatus(ctx *gin.Context) {
+	// ID := ctx.Param(ParamNameContactID)
 }
 
 // TODO: Make this more robust when required
