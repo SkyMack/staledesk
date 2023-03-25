@@ -23,7 +23,7 @@ type Contacts struct {
 }
 
 type FilterContactsResp struct {
-	Total   int              `json:"total" mapstructure:"totle"`
+	Total   int              `json:"total" mapstructure:"total"`
 	Results []models.Contact `json:"results" mapstructure:"results"`
 }
 
@@ -51,7 +51,7 @@ func (contControl *Contacts) GetAll(ctx *gin.Context) {
 		mustMatchPhone = true
 	}
 
-	respContacts := []models.Contact{}
+	var respContacts []models.Contact
 	for _, cont := range contControl.CurrentContacts {
 		if mustMatchEmail && cont.Email != email {
 			continue
