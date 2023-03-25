@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
@@ -366,24 +365,4 @@ func (contControl *Contacts) Delete(ctx *gin.Context) {
 	}
 	delete(contControl.CurrentContacts, intID)
 	ctx.JSON(http.StatusNoContent, nil)
-}
-
-func getIntID(ctx *gin.Context) (int, error) {
-	ID := ctx.Param(ParamNameContactID)
-	intID, err := strconv.Atoi(ID)
-	if err != nil {
-		respMessage := ErrorResp{
-			Description: "invalid contact id specified",
-			Errors: []ErrorDetails{
-				{
-					Field:   "id",
-					Message: "id is not an integer",
-					Code:    "invalid_id",
-				},
-			},
-		}
-		ctx.JSON(http.StatusBadRequest, respMessage)
-		return 0, err
-	}
-	return intID, nil
 }
