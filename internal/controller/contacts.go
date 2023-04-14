@@ -14,7 +14,8 @@ import (
 )
 
 const (
-	ParamNameContactID = "id"
+	ExportRequiredChecks = 2
+	ParamNameContactID   = "id"
 )
 
 type Contacts struct {
@@ -23,7 +24,7 @@ type Contacts struct {
 }
 type ContactExportDetails struct {
 	Fields       ExportStartFields `json:"fields" mapstructure:"fields"`
-	Id           string            `json:"id" mapstructure:"id"`
+	ID           string            `json:"id" mapstructure:"id"`
 	TimesChecked int               `json:"times_checked" mapstructure:"times_checked"`
 }
 
@@ -38,7 +39,7 @@ type ExportStartFields struct {
 type ExportStatusResp struct {
 	Id          string `json:"id" mapstructure:"id"`
 	Status      string `json:"status" mapstructure:"status"`
-	DownloadUrl string `json:"download_url" mapstructure:"downloadurl"`
+	DownloadUrl string `json:"download_url,omitempty" mapstructure:"downloadurl,omitempty"`
 }
 
 type FilterContactsResp struct {
@@ -144,10 +145,75 @@ func (contControl *Contacts) ExportStart(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, respMessage)
 		return
 	}
+
+	var err error
+	contControl.Export.ID, err = randHexString(41)
+	if err != nil {
+		respMessage := ErrorResp{
+			Description: "unable to process export start request",
+			Errors: []ErrorDetails{
+				{
+					Field:   "",
+					Message: "cannot generate export id",
+					Code:    "export_failure",
+				},
+			},
+		}
+		ctx.JSON(http.StatusInternalServerError, respMessage)
+		return
+	}
+
+	contControl.Export.Fields = req.Fields
+	contControl.Export.TimesChecked = 0
+
+	ctx.JSON(http.StatusOK, struct {
+		ID string `json:"id" mapstructure:"id"`
+	}{ID: contControl.Export.ID})
 }
 
 func (contControl *Contacts) ExportStatus(ctx *gin.Context) {
-	// ID := ctx.Param(ParamNameContactID)
+	if contControl.Export.ID == "" {
+		respMessage := ErrorResp{
+			Description: "unable to process export status request",
+			Errors: []ErrorDetails{
+				{
+					Field:   "",
+					Message: "no export in progress",
+					Code:    "export_failure",
+				},
+			},
+		}
+		ctx.JSON(http.StatusInternalServerError, respMessage)
+		return
+	}
+	ID := ctx.Param(ParamNameContactID)
+	if ID != contControl.Export.ID {
+		respMessage := ErrorResp{
+			Description: "unable to process export status request",
+			Errors: []ErrorDetails{
+				{
+					Field:   "",
+					Message: fmt.Sprintf("invalid export id; got *%s* expected *%s*", ID, contControl.Export.ID),
+					Code:    "export_failure",
+				},
+			},
+		}
+		ctx.JSON(http.StatusInternalServerError, respMessage)
+		return
+	}
+
+	resp := ExportStatusResp{
+		Id: contControl.Export.ID,
+	}
+	if contControl.Export.TimesChecked < ExportRequiredChecks {
+		contControl.Export.TimesChecked++
+		resp.Status = "in_progress"
+		ctx.JSON(http.StatusOK, resp)
+	} else {
+		resp.Status = "completed"
+		resp.DownloadUrl = "https://foo.bar/baz"
+		ctx.JSON(http.StatusOK, resp)
+	}
 }
 
 // TODO: Make this more robust when required
